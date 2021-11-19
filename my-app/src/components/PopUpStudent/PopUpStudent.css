@@ -1,0 +1,37 @@
+
+  .main__title{
+    display: flex;
+    justify-content:center;
+    font-weight: 100;
+    font-size:50px
+  }
+  .main__body{
+    display: flex;
+    width:70%;
+    transform: translateX(15%)
+  }
+  .loader:empty {
+    position: absolute;
+    top: calc(50% - 4em);
+    left: calc(50% - 4em);
+    width: 6em;
+    height: 6em;
+    border: 1.1em solid rgba(0, 0, 0, 0.2);
+    border-left: 1.1em solid #000000;
+    border-radius: 50%;
+    animation: load8 1.1s infinite linear;
+  }
+  
+  
+  .Group__Button{
+    display: flex;
+    justify-content:center;
+    margin-left: 10px;
+  }
+  .main__Add{
+    
+   transform: translateX(77%)
+  }
+  .css-1ozefeb {
+    z-index: 99999 !important;
+}
