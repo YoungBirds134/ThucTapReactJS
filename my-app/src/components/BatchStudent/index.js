@@ -17,7 +17,7 @@ import DataGrid, {
 import { TextField, Button } from "@material-ui/core";
 
 import { useForm, Controller } from "react-hook-form";
-import cellNameStudent from './CellsRender/CellName'
+import cellNameStudent from "./CellsRender/CellName";
 // Toast
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -59,20 +59,20 @@ const studentDataSource = new DataSource({
 
   reshapeOnPush: true,
 });
-console.log("Student Data Source: " + studentDataSource);
 
 /////////
 toast.configure();
 const BatchStudent = () => {
   //State
-  const [checkPopup, setCheckPopup] = useState(null);
-
-  const [isShowing, setIsShowing] = useState(false);
-
-  const [date, setDate] = React.useState(new Date());
+  const [changes, setChanges] = useState([]);
+  const [editRowKey, setEditRowKey] = useState(null);
+  const [isRemove, setIsRemove] = useState(true);
+ 
+  // const [date, setDate] = React.useState(new Date());
   // Save params
   const gridRef = useRef(null);
 
+  
   const {
     register,
     handleSubmit,
@@ -81,19 +81,58 @@ const BatchStudent = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm({ defaultValues: { something: "anything" } });
 
-  useEffect(() => {
-    if (checkPopup) {
-      setValue("nameStudent", checkPopup.nameStudent);
-      setValue("phoneStudent", checkPopup.phoneStudent);
-      setValue("dateOfBirth", checkPopup.dateOfBirth);
-      setValue("scoreStudent", checkPopup.scoreStudent);
-    }
-  }, [checkPopup]);
-  const customizeColumns=(columns) => {
-      console.log(columns);
-     
-       
-  }
+  const customizeColumns = (columns) => {};
+  const renderButton = (cell) => {
+    return (
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        {/* <Button
+          variant="contained"
+          onClick={() => {
+            gridRef.current?.instance?.editCell(cell.rowIndex,cell.columnIndex);
+          }}
+        >
+          edit
+        </Button> */}
+        <Button
+        
+          variant="contained"
+          onClick={() => {
+            gridRef.current?.instance?.deleteRow(cell.rowIndex);
+         
+          }}
+        >
+          remove
+        </Button>
+        <Button
+          variant="contained"
+          // disabled={isAddButtonVisible}
+          onClick={() => {
+            gridRef.current?.instance?.undeleteRow(cell.rowIndex);
+          }}
+        >
+          unremove
+        </Button>
+      </div>
+    );
+  };
+
+  const onChangesChange = React.useCallback((changes) => {
+    setChanges(changes);
+  }, []);
+  
+  const onCellClick = (e) => {
+    gridRef.current?.instance?.editCell(e.rowIndex, e.columnIndex);
+  };
+  const onRowInserted = React.useCallback((e) => {
+    
+    
+   console.log("onRowInserted: "+ e);
+  }, []);
+
+const onInitRow=(e) =>{
+e.data.createDate=new Date();
+}
+
   return (
     <div>
       <div className="main__title">
@@ -107,16 +146,28 @@ const BatchStudent = () => {
           remoteOperations={true}
           ref={gridRef}
           customizeColumns={customizeColumns}
+          repaintChangesOnly={true}
+          newRowPosition
+          onCellClick={onCellClick}
+          onInitNewRow={onInitRow}
+          onRowInserted={onRowInserted}
         >
-          <Editing mode="batch" useIcons={true}
-          
+          <Editing
+            mode="batch"
+            useIcons={true}
+            changes={changes}
+            onChangesChange={onChangesChange}
+            // editRowKey={editRowKey}
+            // onEditRowKeyChange={onEditRowKeyChange}
+            startEditAction
+            selectTextOnEditStart={true}
           >
             <TextField label="Student"></TextField>
           </Editing>
           {/* Create Column include Add Remove Update */}
           {/* <Column cellRender={renderButton} dataField="" /> */}
-
-          <Column dataField="nameStudent" dataType="string"  />
+          {/* <Column dataField="id" /> */}
+          <Column dataField="nameStudent" dataType="string" />
           <Column dataField="phoneStudent" dataType="string" />
           <Column dataField="dateOfBirth" dataType="date" format="dd/MM/yyyy" />
           <Column
@@ -124,25 +175,37 @@ const BatchStudent = () => {
             dataType="date"
             visible={false}
             defaultSortOrder="asc"
+            // value={date}
           />
 
           <Column dataField="scoreStudent" dataType="number" />
+          <Column dataField="" cellRender={renderButton}></Column>
+
           <Toolbar>
             <Item location="after">
               <Button
                 variant="contained"
                 icon="refresh"
-                // onClick={() => {window.location.reload(false)}}
-                // onClick={() => studentDataSource.reload()}
-                onClick={() => gridRef.current?.instance?.refresh()}
+                onClick={() => gridRef.current?.instance?.cancelEditData()}
               >
-                Refresh
+                Discard
+              </Button>
+            </Item>
+            <Item location="after">
+              <Button
+                variant="contained"
+                icon="refresh"
+                onClick={() => gridRef.current?.instance?.saveEditData()}
+                viable={false}
+              >
+                Save
               </Button>
             </Item>
             <Item>
               <Button
                 variant="contained"
                 onClick={() => gridRef.current?.instance?.addRow()}
+                
               >
                 add
               </Button>

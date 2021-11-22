@@ -5,7 +5,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import * as React from 'react';
 import PopupStudent from "./../../components/PopUpStudent/index";
 import BatchStudent from "./../../components/BatchStudent/index";
-
+import FormStudent from "./../../components/FormStudent/index";
 
 function ManageStudent() {
     const [value, setValue] = React.useState('2');
@@ -21,12 +21,12 @@ function ManageStudent() {
             <TabList onChange={handleChange} aria-label="lab API tabs example">
               <Tab label="Popup UI" value="1" />
               <Tab label="Batch UI" value="2" />
-              <Tab label="Item Three" value="3" />
+              <Tab label="Form UI" value="3" />
             </TabList>
           </Box>
           <TabPanel value="1"><PopupStudent/></TabPanel>
           <TabPanel value="2"><BatchStudent/></TabPanel>
-          <TabPanel value="3">Item Three</TabPanel>
+          <TabPanel value="3"><FormStudent/></TabPanel>
         </TabContext>
       </Box>
     );
