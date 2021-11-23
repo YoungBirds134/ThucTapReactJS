@@ -65,23 +65,16 @@ toast.configure();
 const BatchStudent = () => {
   //State
   const [changes, setChanges] = useState([]);
-  const [editRowKey, setEditRowKey] = useState(null);
-  const [isRemove, setIsRemove] = useState(true);
+ 
  
   // const [date, setDate] = React.useState(new Date());
   // Save params
   const gridRef = useRef(null);
 
   
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    formState: { errors, isSubmitSuccessful },
-  } = useForm({ defaultValues: { something: "anything" } });
+  
 
-  const customizeColumns = (columns) => {};
+
   const renderButton = (cell) => {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -123,12 +116,8 @@ const BatchStudent = () => {
   const onCellClick = (e) => {
     gridRef.current?.instance?.editCell(e.rowIndex, e.columnIndex);
   };
-  const onRowInserted = React.useCallback((e) => {
-    
-    
-   console.log("onRowInserted: "+ e);
-  }, []);
-
+  
+// Note usually that Create Field default when add row
 const onInitRow=(e) =>{
 e.data.createDate=new Date();
 }
@@ -145,12 +134,12 @@ e.data.createDate=new Date();
           dataSource={studentDataSource}
           remoteOperations={true}
           ref={gridRef}
-          customizeColumns={customizeColumns}
+       
           repaintChangesOnly={true}
           newRowPosition
           onCellClick={onCellClick}
           onInitNewRow={onInitRow}
-          onRowInserted={onRowInserted}
+         
         >
           <Editing
             mode="batch"
@@ -164,9 +153,7 @@ e.data.createDate=new Date();
           >
             <TextField label="Student"></TextField>
           </Editing>
-          {/* Create Column include Add Remove Update */}
-          {/* <Column cellRender={renderButton} dataField="" /> */}
-          {/* <Column dataField="id" /> */}
+          
           <Column dataField="nameStudent" dataType="string" />
           <Column dataField="phoneStudent" dataType="string" />
           <Column dataField="dateOfBirth" dataType="date" format="dd/MM/yyyy" />

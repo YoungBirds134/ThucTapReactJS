@@ -29,7 +29,7 @@ module.exports = {
     });
   },
   store: (req, res) => {
-    console.log(req)
+  
     const data = req.body;
    
     // let sql = `INSERT INTO students(nameStudent,phoneStudent,dateOfBirth,scoreStudent)

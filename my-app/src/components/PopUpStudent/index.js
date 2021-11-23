@@ -3,7 +3,7 @@ import "devextreme/dist/css/dx.light.css";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import ArrayStore from "devextreme/data/array_store";
 import DataSource from "devextreme/data/data_source";
-import CustomStore from 'devextreme/data/custom_store';
+import CustomStore from "devextreme/data/custom_store";
 import "./PopUpStudent.css";
 import axios from "axios";
 import DataGrid, {
@@ -14,7 +14,7 @@ import DataGrid, {
   Popup,
   Toolbar,
   Item,
-  ToolbarItem 
+  ToolbarItem,
 } from "devextreme-react/data-grid";
 import { TextField, Button } from "@material-ui/core";
 
@@ -23,524 +23,19 @@ import { useForm, Controller } from "react-hook-form";
 // Toast
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const data = [
-  {
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
 
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },{
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },
-];
-
-
-
-
-
+import { useQuery } from "react-query";
+import { fetchStudents } from "../../services/fetchStudents.service";
+import { fetchStudentsKey } from "../../util/queryKeys";
+///
 
 /////////
 toast.configure();
 const PopUpStudent = () => {
+  ///Use Query
+  const { isLoading, isError, isSuccess, refetch, remove, data, error } =
+    useQuery(fetchStudentsKey, fetchStudents);
+
   //State
   const [checkPopup, setCheckPopup] = useState(null);
 
@@ -554,11 +49,11 @@ const PopUpStudent = () => {
     store: new ArrayStore({
       key: "id",
       data: data,
-  
+
       // Other ArrayStore properties go here
     }),
     // Other DataSource properties go here
-  
+
     reshapeOnPush: true,
   });
   const {
@@ -569,10 +64,9 @@ const PopUpStudent = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm({ defaultValues: { something: "anything" } });
   useEffect(() => {
-    axios.get('https://6130811d8066ca0017fda905.mockapi.io/Student')
-  .then(res => {
-    
-  });
+    axios
+      .get("https://6130811d8066ca0017fda905.mockapi.io/Student")
+      .then((res) => {});
   }, []);
   useEffect(() => {
     if (checkPopup) {
@@ -582,20 +76,17 @@ const PopUpStudent = () => {
       setValue("scoreStudent", checkPopup.scoreStudent);
     }
   }, [checkPopup]);
-  
+
   const onSubmitAdjustStudent = (student, e) => {
     let randomIdStudent = Math.floor(Math.random() * (2000 - 100 + 1) + 100);
     if (checkPopup !== null) {
-      
-
       let newStudent = {
         nameStudent: student.nameStudent,
         phoneStudent: student.phoneStudent,
         dateOfBirth: student.dateOfBirth,
         scoreStudent: student.scoreStudent,
-        
       };
-      
+
       studentDataSource
         .store()
         .push([{ type: "update", data: newStudent, key: checkPopup.id }]);
@@ -615,12 +106,12 @@ const PopUpStudent = () => {
         scoreStudent: student.scoreStudent,
         phoneStudent: student.phoneStudent,
         dateOfBirth: student.dateOfBirth,
-        createDate:date,
+        createDate: date,
         // id: randomIdStudent,
       };
 
       studentDataSource.store().push([{ type: "insert", data: newStudent }]);
-    
+
       // gridRef.instance.addRow();
       toast("🦄 You are add item", {
         position: "top-right",
@@ -800,7 +291,6 @@ const PopUpStudent = () => {
           variant="contained"
           onClick={() => {
             gridRef.current?.instance?.deleteRow(cell.rowIndex);
-           
           }}
         >
           remove
@@ -813,83 +303,91 @@ const PopUpStudent = () => {
     return <p>{TiTlePopup}</p>;
   };
   return (
-    <div>
-      <div className="main__title">
-        <h1>Manage Data Student</h1>
-      </div>
+    <>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : isError ? (
+        <div>An error while fetching posts</div>
+      ) : (
+        <div>
+          <div className="main__title">
+            <h1>Manage Data Student</h1>
+          </div>
 
-      <div className="main__Add"></div>
-      <div className="main__body">
-        <DataGrid
-          dataSource={studentDataSource}
-          remoteOperations={true}
-          ref={gridRef}
-          onRowRemoved={onRowRemoved}
-          onSaving={onSaving}
-        >
-          <Editing mode="popup" useIcons={true}>
-            <Popup
-              showTitle={true}
-              ref={popupRef}
-              width={700}
-              height={725}
-              visible={isShowing}
-              titleRender={renderTitle}
-              onShown={onShown}
-              onShowing={onShowing}
-              // Customize Popup
-              contentRender={renderContent}
+          <div className="main__Add"></div>
+          <div className="main__body">
+            <DataGrid
+              dataSource={studentDataSource}
+              remoteOperations={true}
+              ref={gridRef}
+              onRowRemoved={onRowRemoved}
+              onSaving={onSaving}
             >
-              <ToolbarItem />
-            </Popup>
-            <TextField label="Student"></TextField>
-          </Editing>
-          {/* Create Column include Add Remove Update */}
-          <Column cellRender={renderButton} dataField="" />
+              <Editing mode="popup" useIcons={true}>
+                <Popup
+                  showTitle={true}
+                  ref={popupRef}
+                  width={700}
+                  height={725}
+                  visible={isShowing}
+                  titleRender={renderTitle}
+                  onShown={onShown}
+                  onShowing={onShowing}
+                  // Customize Popup
+                  contentRender={renderContent}
+                >
+                  <ToolbarItem />
+                </Popup>
+                <TextField label="Student"></TextField>
+              </Editing>
+              {/* Create Column include Add Remove Update */}
+              <Column cellRender={renderButton} dataField="" />
 
-          <Column dataField="nameStudent" dataType="string" />
-          <Column dataField="phoneStudent" dataType="string" />
-          <Column dataField="dateOfBirth" dataType="date" format="dd/MM/yyyy" />
-          <Column
-            dataField="createDate"
-            dataType="date"
-            visible={false}
-            defaultSortOrder="asc"
-          />
+              <Column dataField="nameStudent" dataType="string" />
+              <Column dataField="phoneStudent" dataType="string" />
+              <Column
+                dataField="dateOfBirth"
+                dataType="date"
+                format="dd/MM/yyyy"
+              />
+              <Column
+                dataField="createDate"
+                dataType="date"
+                visible={false}
+                defaultSortOrder="asc"
+              />
 
-          <Column
-            
-            dataField="scoreStudent"
-            dataType="number"
-          />
-          <Toolbar>
-            <Item location="after">
-              <Button
-                variant="contained"
-                icon="refresh"
-                // onClick={() => {window.location.reload(false)}}
-                // onClick={() => studentDataSource.reload()}
-                onClick={() => gridRef.current?.instance?.refresh()}
-              >
-                Refresh
-              </Button>
-            </Item>
-            <Item>
-              <Button
-                variant="contained"
-                onClick={() => gridRef.current?.instance?.addRow()}
-              >
-                add
-              </Button>
-            </Item>
-          </Toolbar>
-          <Paging defaultPageSize={12} />
-          <Pager showPageSizeSelector={true} />
-        </DataGrid>
-      </div>
+              <Column dataField="scoreStudent" dataType="number" />
+              <Toolbar>
+                <Item location="after">
+                  <Button
+                    variant="contained"
+                    icon="refresh"
+                    // onClick={() => {window.location.reload(false)}}
+                    // onClick={() => studentDataSource.reload()}
+                    onClick={() => refetch()}
+                  >
+                    Refetch
+                  </Button>
+                </Item>
+                <Item>
+                  <Button
+                    variant="contained"
+                    onClick={() => gridRef.current?.instance?.addRow()}
+                  >
+                    add
+                  </Button>
+                </Item>
+              </Toolbar>
+              <Paging defaultPageSize={12} />
+              <Pager showPageSizeSelector={true} />
+            </DataGrid>
+          </div>
 
-      {/* ///React Hook Form + Material Setup */}
-    </div>
+          {/* ///React Hook Form + Material Setup */}
+        </div>
+      )}
+    </>
   );
 };
 //Create content customize Form

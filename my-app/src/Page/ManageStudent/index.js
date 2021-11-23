@@ -6,9 +6,10 @@ import * as React from 'react';
 import PopupStudent from "./../../components/PopUpStudent/index";
 import BatchStudent from "./../../components/BatchStudent/index";
 import FormStudent from "./../../components/FormStudent/index";
+import CellStudent from "./../../components/CellStudent/index";
 
 function ManageStudent() {
-    const [value, setValue] = React.useState('2');
+    const [value, setValue] = React.useState('3');
 
     const handleChange = (event, newValue) => {
       setValue(newValue);
@@ -21,12 +22,12 @@ function ManageStudent() {
             <TabList onChange={handleChange} aria-label="lab API tabs example">
               <Tab label="Popup UI" value="1" />
               <Tab label="Batch UI" value="2" />
-              <Tab label="Form UI" value="3" />
+              <Tab label="Cell UI" value="3" />
             </TabList>
           </Box>
           <TabPanel value="1"><PopupStudent/></TabPanel>
           <TabPanel value="2"><BatchStudent/></TabPanel>
-          <TabPanel value="3"><FormStudent/></TabPanel>
+          <TabPanel value="3"><CellStudent/></TabPanel>
         </TabContext>
       </Box>
     );
