@@ -3,9 +3,10 @@ import "devextreme/dist/css/dx.light.css";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import ArrayStore from "devextreme/data/array_store";
 import DataSource from "devextreme/data/data_source";
-import CustomStore from "devextreme/data/custom_store";
+
 import "./PopUpStudent.css";
-import axios from "axios";
+
+import moment from "moment";
 import DataGrid, {
   Column,
   Paging,
@@ -15,6 +16,7 @@ import DataGrid, {
   Toolbar,
   Item,
   ToolbarItem,
+  Scrolling,
 } from "devextreme-react/data-grid";
 import { TextField, Button } from "@material-ui/core";
 
@@ -24,31 +26,41 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { useQuery } from "react-query";
-import { fetchStudents } from "../../services/fetchStudents.service";
-import { fetchStudentsKey } from "../../util/queryKeys";
+import useGetData from "./hooks/useGetData";
+import useGetDataByPaing from "./hooks/useGetDataByPaging";
+import useDeleteData from "./hooks/useDeleteData";
+import useCreateData from "./hooks/useCreateData";
+import useUpdateData from "./hooks/useUpdateData";
+
 ///
 
 /////////
 toast.configure();
 const PopUpStudent = () => {
   ///Use Query
-  const { isLoading, isError, isSuccess, refetch, remove, data, error } =
-    useQuery(fetchStudentsKey, fetchStudents);
+  const {
+    refetchStudent,
+
+    dataStudent,
+    isErrorStudent,
+    isLoadingStudent,
+  } = useGetData();
 
   //State
+  const allowedPageSizes = [5, 10, "all"];
   const [checkPopup, setCheckPopup] = useState(null);
-
+  const [page, setPage] = useState({ _pageIndex: 1, _pageSize: 5 });
   const [isShowing, setIsShowing] = useState(false);
   const [TiTlePopup, setTiTlePopup] = useState("");
   const [date, setDate] = React.useState(new Date());
+
   // Save params
   const gridRef = useRef(null);
-  const popupRef = useRef(null);
+
   const studentDataSource = new DataSource({
     store: new ArrayStore({
       key: "id",
-      data: data,
+      data: dataStudent,
 
       // Other ArrayStore properties go here
     }),
@@ -63,11 +75,7 @@ const PopUpStudent = () => {
     setValue,
     formState: { errors, isSubmitSuccessful },
   } = useForm({ defaultValues: { something: "anything" } });
-  useEffect(() => {
-    axios
-      .get("https://6130811d8066ca0017fda905.mockapi.io/Student")
-      .then((res) => {});
-  }, []);
+
   useEffect(() => {
     if (checkPopup) {
       setValue("nameStudent", checkPopup.nameStudent);
@@ -77,16 +85,31 @@ const PopUpStudent = () => {
     }
   }, [checkPopup]);
 
-  const onSubmitAdjustStudent = (student, e) => {
-    let randomIdStudent = Math.floor(Math.random() * (2000 - 100 + 1) + 100);
+  const createMutation = useCreateData();
+  const updateMutation = useUpdateData();
+  const deleteMutation = useDeleteData();
+  // const {
+  //   dataStudentByPaging,
+  //   isLoadingStudentByPaging,
+  //   refetchStudentByPaging,
+  //   removeStudentByPaging,
+
+  //   errorStudentByPaging,
+  // } = useGetDataByPaging(page);
+
+  const { isLoading, isError, error, isSuccess } = createMutation;
+
+  const onSubmitAdjustStudent = async (student, e) => {
     if (checkPopup !== null) {
+      let convertDate = moment(student.dateOfBirth).format("YYYY-MM-DD");
       let newStudent = {
+        id: checkPopup.id,
         nameStudent: student.nameStudent,
         phoneStudent: student.phoneStudent,
-        dateOfBirth: student.dateOfBirth,
+        dateOfBirth: convertDate,
         scoreStudent: student.scoreStudent,
       };
-
+      updateMutation.mutate(newStudent);
       studentDataSource
         .store()
         .push([{ type: "update", data: newStudent, key: checkPopup.id }]);
@@ -109,10 +132,9 @@ const PopUpStudent = () => {
         createDate: date,
         // id: randomIdStudent,
       };
-
+      createMutation.mutate(student);
       studentDataSource.store().push([{ type: "insert", data: newStudent }]);
 
-      // gridRef.instance.addRow();
       toast("🦄 You are add item", {
         position: "top-right",
         autoClose: 5000,
@@ -142,9 +164,7 @@ const PopUpStudent = () => {
       setTiTlePopup("Add Student");
     }
   };
-  const handleChangeDatetime = (newValue) => {
-    setDate(newValue);
-  };
+
   const renderContent = () => {
     return (
       <>
@@ -261,8 +281,13 @@ const PopUpStudent = () => {
   // Process Button: Edit and Remove
 
   // Render button and add Row
-  const onSaving = () => {};
-  const onRowRemoved = () => {
+
+  const onRowRemoved = (e) => {
+    console.log("Key: " + e.data);
+    let data = e.data;
+    // deleteMutation.mutate(data.id);
+    deleteMutation.mutate(data.id);
+
     toast("🦄 You are deleted item", {
       position: "top-right",
       autoClose: 5000,
@@ -302,11 +327,12 @@ const PopUpStudent = () => {
   const renderTitle = () => {
     return <p>{TiTlePopup}</p>;
   };
+
   return (
     <>
-      {isLoading ? (
+      {isLoadingStudent ? (
         <div>Loading...</div>
-      ) : isError ? (
+      ) : isErrorStudent ? (
         <div>An error while fetching posts</div>
       ) : (
         <div>
@@ -321,12 +347,17 @@ const PopUpStudent = () => {
               remoteOperations={true}
               ref={gridRef}
               onRowRemoved={onRowRemoved}
-              onSaving={onSaving}
             >
+              <Scrolling rowRenderingMode="virtual"></Scrolling>
+              <Paging defaultPageSize={5} />
+              <Pager
+                visible={true}
+                allowedPageSizes={allowedPageSizes}
+                displayMode="compact"
+              />
               <Editing mode="popup" useIcons={true}>
                 <Popup
                   showTitle={true}
-                  ref={popupRef}
                   width={700}
                   height={725}
                   visible={isShowing}
@@ -336,7 +367,7 @@ const PopUpStudent = () => {
                   // Customize Popup
                   contentRender={renderContent}
                 >
-                  <ToolbarItem />
+                  {/* <ToolbarItem /> */}
                 </Popup>
                 <TextField label="Student"></TextField>
               </Editing>
@@ -365,7 +396,9 @@ const PopUpStudent = () => {
                     icon="refresh"
                     // onClick={() => {window.location.reload(false)}}
                     // onClick={() => studentDataSource.reload()}
-                    onClick={() => refetch()}
+                    onClick={() => refetchStudent()
+                    
+                    }
                   >
                     Refetch
                   </Button>
@@ -379,8 +412,6 @@ const PopUpStudent = () => {
                   </Button>
                 </Item>
               </Toolbar>
-              <Paging defaultPageSize={12} />
-              <Pager showPageSizeSelector={true} />
             </DataGrid>
           </div>
 

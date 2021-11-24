@@ -22,7 +22,7 @@ module.exports = {
   update: (req, res) => {
     let data = req.body;
     let id = req.params.id;
-    let sql = "UPDATE students SET ? WHERE id = ?";
+    let sql = `UPDATE students SET nameStudent='${data.nameStudent}',phoneStudent='${data.phoneStudent}',dateOfBirth='${data.dateOfBirth}',scoreStudent='${data.scoreStudent}' WHERE id = '${req.params.id}'`;
     db.query(sql, [data, id], (err, response) => {
       if (err) throw err;
       res.json({ message: "Update success!" });
@@ -48,6 +48,24 @@ module.exports = {
     db.query(sql, [req.params.id], (err, response) => {
       if (err) throw err;
       res.json({ message: "Delete success!" });
+    });
+  },
+  totalsStudents:(req,res) => {
+    let sql = "SELECT COUNT(id) as totalItemPage  FROM students";
+    db.query(sql, (err, response) => {
+      if (err) throw err;
+      res.json(response);
+    });
+  },
+  pagingStudents:(req,res) => {
+    let limit = req.params.limit;
+    let numPage = req.params.numPage;
+    let currentPage=(numPage - 1)*limit;
+    let sql = `SELECT * FROM students ORDER BY students.id asc Limit ${currentPage},${limit}`;
+    db.query(sql, (err, response) => {
+      if (err) throw err;
+      
+      res.json(response,currentPage);
     });
   },
 };

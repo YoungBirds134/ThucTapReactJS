@@ -12,6 +12,8 @@ module.exports = function(app) {
     .put(studentsCtrl.update)
     .delete(studentsCtrl.delete);
   
+    app.route('/totalStudents').get(studentsCtrl.totalsStudents);
+    app.route('/students-paging/:limit/:numPage').get(studentsCtrl.pagingStudents);
 
   
 };

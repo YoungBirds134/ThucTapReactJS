@@ -9,7 +9,7 @@ import FormStudent from "./../../components/FormStudent/index";
 import CellStudent from "./../../components/CellStudent/index";
 
 function ManageStudent() {
-    const [value, setValue] = React.useState('3');
+    const [value, setValue] = React.useState('1');
 
     const handleChange = (event, newValue) => {
       setValue(newValue);
@@ -27,7 +27,7 @@ function ManageStudent() {
           </Box>
           <TabPanel value="1"><PopupStudent/></TabPanel>
           <TabPanel value="2"><BatchStudent/></TabPanel>
-          <TabPanel value="3"><CellStudent/></TabPanel>
+          {/* <TabPanel value="3"><CellStudent/></TabPanel> */}
         </TabContext>
       </Box>
     );

@@ -3,6 +3,8 @@ import "devextreme/dist/css/dx.light.css";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import ArrayStore from "devextreme/data/array_store";
 import DataSource from "devextreme/data/data_source";
+import { v4 as uuidv4 } from 'uuid';
+
 import "./CellStudent.css";
 import DataGrid, {
   Column,
@@ -16,22 +18,20 @@ import DataGrid, {
 } from "devextreme-react/data-grid";
 import { TextField, Button } from "@material-ui/core";
 
-import { useQuery } from "react-query";
-import { fetchStudents } from "../../services/fetchStudents.service";
-import { fetchStudentsKey } from "../../util/queryKeys";
+
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import  useGetData  from "./hooks/useGetData";
+import useGetData from "./hooks/useGetData";
 
 /////////
 toast.configure();
 
 const CellStudent = () => {
-  const { data, isLoading ,refetch} = useGetData();
+  const { data, isLoading, refetch } = useGetData();
   //State
 
   const [changes, setChanges] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  
   // Save params
   const gridRef = useRef(null);
   const studentDataSource = new DataSource({
@@ -62,25 +62,23 @@ const CellStudent = () => {
   };
 
   const onChangesChange = React.useCallback((changes) => {
+    console.log("onChanges: "+changes);
     setChanges(changes);
   }, []);
 
   const onCellClick = (e) => {
-    if (gridRef.current?.instance.getVisibleColumnIndex(e.columnIndex)) {
+    
       gridRef.current?.instance?.editCell(e.rowIndex, e.columnIndex);
-      console.log("Cell is now visible");
-    } else {
-      console.log("Cell not visible");
+      
+  };
+  
+  
+  const onInitRow=(e) =>{
+ 
+    e.data.createDate=new Date();
+    e.data.id=uuidv4();
+    
     }
-  };
-  const editingStart = (e) => {
-    debugger;
-
-    // gridRef.current?.instance?.saveEditData();
-  };
-  const selectionChanged = (data) => {
-    setSelectedRowKeys(data.selectedRowKeys);
-  };
   return (
     <div>
       <div className="main__title">
@@ -95,9 +93,10 @@ const CellStudent = () => {
           ref={gridRef}
           repaintChangesOnly={true}
           onCellClick={onCellClick}
-          editingStart={editingStart}
-          selectedRowKeys={selectedRowKeys}
-          onSelectionChanged={selectionChanged}
+          
+         
+          onInitNewRow={onInitRow}
+        
         >
           <Editing
             mode="cell"
@@ -112,16 +111,20 @@ const CellStudent = () => {
           >
             <TextField label="Student"></TextField>
           </Editing>
-
+          <Column
+            dataField="id"
+            dataType="string"
+           
+          />
           <Column
             dataField="nameStudent"
             dataType="string"
-            showEditorAlways={false}
+           
           />
           <Column
             dataField="phoneStudent"
             dataType="string"
-            showEditorAlways={false}
+          
           />
           <Column
             dataField="dateOfBirth"
@@ -164,16 +167,7 @@ const CellStudent = () => {
                 refetch
               </Button>
             </Item>
-            {/* <Item location="after">
-              <Button
-                variant="contained"
-                icon="refresh"
-                onClick={() => gridRef.current?.instance?.saveEditData()}
-                viable={false}
-              >
-                Save
-              </Button>
-            </Item> */}
+           
             <Item>
               <Button
                 variant="contained"

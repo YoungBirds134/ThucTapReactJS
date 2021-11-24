@@ -17,63 +17,44 @@ import DataGrid, {
 import { TextField, Button } from "@material-ui/core";
 
 import { useForm, Controller } from "react-hook-form";
-import cellNameStudent from "./CellsRender/CellName";
+
 // Toast
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const data = [
-  {
-    dateOfBirth: "2000-01-02",
-    nameStudent: "Nguyễn Thanh Huy",
-    phoneStudent: "092365124",
-
-    scoreStudent: 10,
-    id: "1",
-  },
-  {
-    dateOfBirth: "2000-10-09",
-    nameStudent: "Nguyễn Thị Đào",
-    phoneStudent: "0902554175",
-
-    scoreStudent: 1,
-    id: "12",
-  },
-  {
-    dateOfBirth: "1960-12-29",
-    nameStudent: "Trần Văn Thời",
-    phoneStudent: "09025541541",
-
-    scoreStudent: 10,
-    id: "112",
-  },
-];
-
-const studentDataSource = new DataSource({
-  store: new ArrayStore({
-    key: "id",
-    data: data,
-
-    // Other ArrayStore properties go here
-  }),
-  // Other DataSource properties go here
-
-  reshapeOnPush: true,
-});
+import useGetData from "./hooks/useGetData";
+import useGetDataByPaing from "./hooks/useGetDataByPaging";
+import useDeleteData from "./hooks/useDeleteData";
+import useCreateData from "./hooks/useCreateData";
+import useUpdateData from "./hooks/useUpdateData";
+const allowedPageSizes = [5, 10, "all"];
 
 /////////
 toast.configure();
 const BatchStudent = () => {
+  const {
+    refetchStudent,
+
+    dataStudent,
+    isErrorStudent,
+    isLoadingStudent,
+  } = useGetData();
+  const studentDataSource = new DataSource({
+    store: new ArrayStore({
+      key: "id",
+      data: dataStudent,
+
+      // Other ArrayStore properties go here
+    }),
+    // Other DataSource properties go here
+
+    reshapeOnPush: true,
+  });
   //State
   const [changes, setChanges] = useState([]);
- 
- 
-  // const [date, setDate] = React.useState(new Date());
+  const [editRowKey, setEditRowKey] = useState(null);
+  
   // Save params
   const gridRef = useRef(null);
-
-  
-  
-
 
   const renderButton = (cell) => {
     return (
@@ -87,11 +68,9 @@ const BatchStudent = () => {
           edit
         </Button> */}
         <Button
-        
           variant="contained"
           onClick={() => {
             gridRef.current?.instance?.deleteRow(cell.rowIndex);
-         
           }}
         >
           remove
@@ -110,19 +89,29 @@ const BatchStudent = () => {
   };
 
   const onChangesChange = React.useCallback((changes) => {
+    console.log("changes: " + changes);
     setChanges(changes);
   }, []);
-  
   const onCellClick = (e) => {
+    console.log("Row index: " + e.rowIndex);
+    console.log("Cell index: " + e.columnIndex);
+
     gridRef.current?.instance?.editCell(e.rowIndex, e.columnIndex);
   };
-  
-// Note usually that Create Field default when add row
-const onInitRow=(e) =>{
-e.data.createDate=new Date();
-}
 
-  return (
+  // Note usually that Create Field default when add row
+  const onInitRow = (e) => {
+    e.data.createDate = new Date();
+  };
+  const onEditRowKeyChange = React.useCallback((editRowKey) => {
+    console.log(editRowKey);
+    setEditRowKey(editRowKey);
+  }, []);
+  return isLoadingStudent ? (
+    <div>Loading...</div>
+  ) : isErrorStudent ? (
+    <div>An error while fetching posts</div>
+  ) : (
     <div>
       <div className="main__title">
         <h1>Manage Data Student</h1>
@@ -134,26 +123,31 @@ e.data.createDate=new Date();
           dataSource={studentDataSource}
           remoteOperations={true}
           ref={gridRef}
-       
           repaintChangesOnly={true}
-          newRowPosition
+       
           onCellClick={onCellClick}
           onInitNewRow={onInitRow}
          
         >
+          <Paging defaultPageSize={5} />
+          <Pager
+            visible={true}
+            allowedPageSizes={allowedPageSizes}
+            displayMode="compact"
+          />
           <Editing
             mode="batch"
             useIcons={true}
             changes={changes}
             onChangesChange={onChangesChange}
-            // editRowKey={editRowKey}
-            // onEditRowKeyChange={onEditRowKeyChange}
+            editRowKey={editRowKey}
+            onEditRowKeyChange={onEditRowKeyChange}
             startEditAction
             selectTextOnEditStart={true}
           >
             <TextField label="Student"></TextField>
           </Editing>
-          
+
           <Column dataField="nameStudent" dataType="string" />
           <Column dataField="phoneStudent" dataType="string" />
           <Column dataField="dateOfBirth" dataType="date" format="dd/MM/yyyy" />
@@ -169,6 +163,15 @@ e.data.createDate=new Date();
           <Column dataField="" cellRender={renderButton}></Column>
 
           <Toolbar>
+            <Item location="after">
+              <Button
+                variant="contained"
+                icon="refresh"
+                onClick={() => refetchStudent()}
+              >
+                Refetch
+              </Button>
+            </Item>
             <Item location="after">
               <Button
                 variant="contained"
@@ -192,14 +195,11 @@ e.data.createDate=new Date();
               <Button
                 variant="contained"
                 onClick={() => gridRef.current?.instance?.addRow()}
-                
               >
                 add
               </Button>
             </Item>
           </Toolbar>
-          <Paging defaultPageSize={12} />
-          <Pager showPageSizeSelector={true} />
         </DataGrid>
       </div>
 
