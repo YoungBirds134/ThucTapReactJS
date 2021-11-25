@@ -27,7 +27,7 @@ function ManageStudent() {
           </Box>
           <TabPanel value="1"><PopupStudent/></TabPanel>
           <TabPanel value="2"><BatchStudent/></TabPanel>
-          {/* <TabPanel value="3"><CellStudent/></TabPanel> */}
+          <TabPanel value="3"><CellStudent/></TabPanel>
         </TabContext>
       </Box>
     );

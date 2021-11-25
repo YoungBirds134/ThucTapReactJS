@@ -3,7 +3,7 @@ import "devextreme/dist/css/dx.light.css";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import ArrayStore from "devextreme/data/array_store";
 import DataSource from "devextreme/data/data_source";
-
+import { LoadPanel } from "devextreme-react/load-panel";
 import "./PopUpStudent.css";
 
 import moment from "moment";
@@ -15,8 +15,8 @@ import DataGrid, {
   Popup,
   Toolbar,
   Item,
-  ToolbarItem,
   Scrolling,
+  ToolbarItem,
 } from "devextreme-react/data-grid";
 import { TextField, Button } from "@material-ui/core";
 
@@ -40,19 +40,20 @@ const PopUpStudent = () => {
   ///Use Query
   const {
     refetchStudent,
-
+    
     dataStudent,
     isErrorStudent,
     isLoadingStudent,
   } = useGetData();
-
+  
+  setTimeout(dataStudent,5000000);
   //State
   const allowedPageSizes = [5, 10, "all"];
   const [checkPopup, setCheckPopup] = useState(null);
   const [page, setPage] = useState({ _pageIndex: 1, _pageSize: 5 });
+  const [isLoadingPanel, setIsLoadingPanel] = useState(false);
   const [isShowing, setIsShowing] = useState(false);
   const [TiTlePopup, setTiTlePopup] = useState("");
-  const [date, setDate] = React.useState(new Date());
 
   // Save params
   const gridRef = useRef(null);
@@ -113,41 +114,22 @@ const PopUpStudent = () => {
       studentDataSource
         .store()
         .push([{ type: "update", data: newStudent, key: checkPopup.id }]);
-
-      toast("🦄 You are update item", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
     } else {
       const newStudent = {
         nameStudent: student.nameStudent,
         scoreStudent: student.scoreStudent,
         phoneStudent: student.phoneStudent,
         dateOfBirth: student.dateOfBirth,
-        createDate: date,
+
         // id: randomIdStudent,
       };
       createMutation.mutate(student);
       studentDataSource.store().push([{ type: "insert", data: newStudent }]);
-
-      toast("🦄 You are add item", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
     }
     e.target.reset();
     setCheckPopup(null);
     setIsShowing(false);
+    setIsLoadingPanel(true);
   };
 
   const onHidePopup = (e) => {
@@ -282,21 +264,23 @@ const PopUpStudent = () => {
 
   // Render button and add Row
 
-  const onRowRemoved = (e) => {
+  const onRowRemoving = (e) => {
+    setIsLoadingPanel(true);
     console.log("Key: " + e.data);
     let data = e.data;
     // deleteMutation.mutate(data.id);
     deleteMutation.mutate(data.id);
+  };
 
-    toast("🦄 You are deleted item", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+  const onSaving = React.useCallback((e) => {
+    setIsLoadingPanel(true);
+  }, []);
+  const onInitRow = (e) => {
+    e.data.createDate = new Date();
+    // e.data.id = Math.ceil(Math.random() * (10000 - 100) + 100);
+  };
+  const deleteLoading = () => {
+    setIsLoadingPanel(true);
   };
   const renderButton = (cell) => {
     ///How to Debugger: Put Break point and add debugger
@@ -316,6 +300,7 @@ const PopUpStudent = () => {
           variant="contained"
           onClick={() => {
             gridRef.current?.instance?.deleteRow(cell.rowIndex);
+            deleteLoading();
           }}
         >
           remove
@@ -330,11 +315,11 @@ const PopUpStudent = () => {
 
   return (
     <>
-      {isLoadingStudent ? (
+      {/* {isLoadingStudent ? (
         <div>Loading...</div>
       ) : isErrorStudent ? (
         <div>An error while fetching posts</div>
-      ) : (
+      ) : ( */}
         <div>
           <div className="main__title">
             <h1>Manage Data Student</h1>
@@ -343,11 +328,23 @@ const PopUpStudent = () => {
           <div className="main__Add"></div>
           <div className="main__body">
             <DataGrid
-              dataSource={studentDataSource}
+              dataSource={dataStudent||[]}
               remoteOperations={true}
               ref={gridRef}
-              onRowRemoved={onRowRemoved}
+              loadPanel
+              enabled={true}
+              onRowRemoving={onRowRemoving}
+              // onSaving={onSaving}
+              onInitNewRow={onInitRow}
             >
+              <LoadPanel
+                position="center"
+                shadingColor="rgba(0,0,0,1)"
+                visible={isLoadingStudent}
+                showIndicator={true}
+                shading={true}
+                showPane={true}
+              />
               <Scrolling rowRenderingMode="virtual"></Scrolling>
               <Paging defaultPageSize={5} />
               <Pager
@@ -367,13 +364,12 @@ const PopUpStudent = () => {
                   // Customize Popup
                   contentRender={renderContent}
                 >
-                  {/* <ToolbarItem /> */}
+                  <ToolbarItem />
                 </Popup>
                 <TextField label="Student"></TextField>
               </Editing>
               {/* Create Column include Add Remove Update */}
               <Column cellRender={renderButton} dataField="" />
-
               <Column dataField="nameStudent" dataType="string" />
               <Column dataField="phoneStudent" dataType="string" />
               <Column
@@ -387,22 +383,8 @@ const PopUpStudent = () => {
                 visible={false}
                 defaultSortOrder="asc"
               />
-
               <Column dataField="scoreStudent" dataType="number" />
               <Toolbar>
-                <Item location="after">
-                  <Button
-                    variant="contained"
-                    icon="refresh"
-                    // onClick={() => {window.location.reload(false)}}
-                    // onClick={() => studentDataSource.reload()}
-                    onClick={() => refetchStudent()
-                    
-                    }
-                  >
-                    Refetch
-                  </Button>
-                </Item>
                 <Item>
                   <Button
                     variant="contained"
@@ -417,7 +399,7 @@ const PopUpStudent = () => {
 
           {/* ///React Hook Form + Material Setup */}
         </div>
-      )}
+      {/* )} */}
     </>
   );
 };

@@ -3,6 +3,8 @@ import "devextreme/dist/css/dx.light.css";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import ArrayStore from "devextreme/data/array_store";
 import DataSource from "devextreme/data/data_source";
+import { LoadPanel } from "devextreme-react/load-panel";
+
 import "./BatchStudent.css";
 import DataGrid, {
   Column,
@@ -12,7 +14,7 @@ import DataGrid, {
   Popup,
   Toolbar,
   Item,
-  ToolbarItem,
+  RequiredRule,
 } from "devextreme-react/data-grid";
 import { TextField, Button } from "@material-ui/core";
 
@@ -21,11 +23,10 @@ import { useForm, Controller } from "react-hook-form";
 // Toast
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useGetData from "./hooks/useGetData";
-import useGetDataByPaing from "./hooks/useGetDataByPaging";
-import useDeleteData from "./hooks/useDeleteData";
-import useCreateData from "./hooks/useCreateData";
-import useUpdateData from "./hooks/useUpdateData";
+import useGetData from "./../PopUpStudent/hooks/useGetData";
+import useDeleteData from "./../PopUpStudent/hooks/useDeleteData";
+import useCreateData from "./../PopUpStudent/hooks/useCreateData";
+import useUpdateData from "./../PopUpStudent/hooks/useUpdateData";
 const allowedPageSizes = [5, 10, "all"];
 
 /////////
@@ -50,23 +51,19 @@ const BatchStudent = () => {
     reshapeOnPush: true,
   });
   //State
+  const [isLoadingPanel, setIsLoadingPanel] = useState(false);
+
   const [changes, setChanges] = useState([]);
   const [editRowKey, setEditRowKey] = useState(null);
-  
+  const createMutation = useCreateData();
+  const updateMutation = useUpdateData();
+  const deleteMutation = useDeleteData();
   // Save params
   const gridRef = useRef(null);
 
   const renderButton = (cell) => {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {/* <Button
-          variant="contained"
-          onClick={() => {
-            gridRef.current?.instance?.editCell(cell.rowIndex,cell.columnIndex);
-          }}
-        >
-          edit
-        </Button> */}
         <Button
           variant="contained"
           onClick={() => {
@@ -89,24 +86,47 @@ const BatchStudent = () => {
   };
 
   const onChangesChange = React.useCallback((changes) => {
-    console.log("changes: " + changes);
+    console.log("change: " + changes);
     setChanges(changes);
   }, []);
   const onCellClick = (e) => {
-    console.log("Row index: " + e.rowIndex);
-    console.log("Cell index: " + e.columnIndex);
-
     gridRef.current?.instance?.editCell(e.rowIndex, e.columnIndex);
   };
 
   // Note usually that Create Field default when add row
   const onInitRow = (e) => {
     e.data.createDate = new Date();
+    // e.data.id = Math.ceil(Math.random() * (10000 - 100) + 100);
   };
   const onEditRowKeyChange = React.useCallback((editRowKey) => {
     console.log(editRowKey);
     setEditRowKey(editRowKey);
   }, []);
+  const onSaving = React.useCallback(
+    (e) => {
+      // e.cancel = true;
+      debugger
+      gridRef.current?.instance?.beginUpdate();
+      const data = e.changes;
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].type === "insert") {
+          createMutation.mutate(data[i].data);
+
+          console.log("INSERT");
+        } else if (data[i].type === "update") {
+          updateMutation.mutate(data[i].data);
+
+          console.log("UPDATE");
+        } else {
+          deleteMutation.mutate(data[i].key.id);
+          console.log("REMOVE");
+        }
+      }
+      gridRef.current?.instance?.endUpdate() ;
+    },
+    [createMutation, updateMutation, deleteMutation]
+  );
+  
   return isLoadingStudent ? (
     <div>Loading...</div>
   ) : isErrorStudent ? (
@@ -120,15 +140,25 @@ const BatchStudent = () => {
       <div className="main__Add"></div>
       <div className="main__body">
         <DataGrid
-          dataSource={studentDataSource}
+          // keyExpr="id"
+          showBorders
+          dataSource={dataStudent}
           remoteOperations={true}
           ref={gridRef}
           repaintChangesOnly={true}
-       
           onCellClick={onCellClick}
           onInitNewRow={onInitRow}
-         
+          onSaving={onSaving}
+          loadPanel
+        
         >
+        <LoadPanel
+                shadingColor="rgba(0,0,0,0.4)"
+                visible={isLoadingPanel}
+                showIndicator={true}
+                shading={true}
+                showPane={true}
+              />
           <Paging defaultPageSize={5} />
           <Pager
             visible={true}
@@ -142,15 +172,22 @@ const BatchStudent = () => {
             onChangesChange={onChangesChange}
             editRowKey={editRowKey}
             onEditRowKeyChange={onEditRowKeyChange}
-            startEditAction
-            selectTextOnEditStart={true}
           >
             <TextField label="Student"></TextField>
           </Editing>
 
-          <Column dataField="nameStudent" dataType="string" />
-          <Column dataField="phoneStudent" dataType="string" />
-          <Column dataField="dateOfBirth" dataType="date" format="dd/MM/yyyy" />
+          <Column dataField="nameStudent" dataType="string">
+            {" "}
+            <RequiredRule />
+          </Column>
+          <Column dataField="phoneStudent" dataType="string">
+            {" "}
+            <RequiredRule />
+          </Column>
+          <Column dataField="dateOfBirth" dataType="date" format="dd/MM/yyyy">
+            {" "}
+            <RequiredRule />
+          </Column>
           <Column
             dataField="createDate"
             dataType="date"
@@ -159,19 +196,13 @@ const BatchStudent = () => {
             // value={date}
           />
 
-          <Column dataField="scoreStudent" dataType="number" />
+          <Column dataField="scoreStudent" dataType="number">
+            {" "}
+            <RequiredRule />
+          </Column>
           <Column dataField="" cellRender={renderButton}></Column>
 
           <Toolbar>
-            <Item location="after">
-              <Button
-                variant="contained"
-                icon="refresh"
-                onClick={() => refetchStudent()}
-              >
-                Refetch
-              </Button>
-            </Item>
             <Item location="after">
               <Button
                 variant="contained"
@@ -185,7 +216,9 @@ const BatchStudent = () => {
               <Button
                 variant="contained"
                 icon="refresh"
-                onClick={() => gridRef.current?.instance?.saveEditData()}
+                onClick={() => {gridRef.current?.instance?.saveEditData();
+              
+                }}
                 viable={false}
               >
                 Save
