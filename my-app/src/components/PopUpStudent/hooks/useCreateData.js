@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const CreateStudent = async (student) => {
+  debugger
   await (
     await axios.post(`http://127.0.0.1:8000/students/`,student)
   ).data;

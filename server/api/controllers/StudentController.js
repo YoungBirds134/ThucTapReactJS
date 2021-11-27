@@ -36,9 +36,7 @@ module.exports = {
   },
   store: (req, res) => {
     const data = req.body;
-    console.log("Taken Data: " + JSON.stringify(data));
-    
-
+  
     for (let i = 0; i < data.length; i++) {
     console.log("Taken Data: " + JSON.stringify(data));
 
@@ -56,13 +54,14 @@ module.exports = {
 
         console.log("INSERT");
       } else if (data[i].type === "update") {
+        console.log("Taken Data: " + JSON.stringify(data[i]));
         let sql = `UPDATE students SET nameStudent='${
-          data[i].key.nameStudent
-        }',phoneStudent='${data[i].key.phoneStudent}',dateOfBirth='${moment(
-          data[i].key.dateOfBirth
+          data[i].data.nameStudent
+        }',phoneStudent='${data[i].data.phoneStudent}',dateOfBirth='${moment(
+          data[i].data.dateOfBirth
         ).format("YYYY-MM-DD")}',scoreStudent='${
-          data[i].key.scoreStudent
-        }' WHERE id = '${data[i].key.id}'`;
+          data[i].data.scoreStudent
+        }' WHERE id = '${data[i].data.id}'`;
         db.query(sql, (err, response) => {
           if (err) throw err;
           res.json({ message: "Update success!" });
@@ -70,7 +69,7 @@ module.exports = {
 
         console.log("UPDATE");
       } else if (data[i].type === "remove") {
-        let sql = `DELETE FROM students WHERE id =${data[i].key.id} `;
+        let sql = `DELETE FROM students WHERE id =${data[i].data.id} `;
         db.query(sql, (err, response) => {
           if (err) throw err;
           res.json({ message: "Delete success!" });
