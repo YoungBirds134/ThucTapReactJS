@@ -9,7 +9,7 @@ import FormStudent from "./../../components/FormStudent/index";
 import CellStudent from "./../../components/CellStudent/index";
 
 function ManageStudent() {
-    const [value, setValue] = React.useState('1');
+    const [value, setValue] = React.useState('3');
 
     const handleChange = (event, newValue) => {
       setValue(newValue);

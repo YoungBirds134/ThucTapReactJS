@@ -36,18 +36,57 @@ module.exports = {
   },
   store: (req, res) => {
     const data = req.body;
+    console.log("Taken Data: " + JSON.stringify(data));
+    
 
-    // let sql = `INSERT INTO students(nameStudent,phoneStudent,dateOfBirth,scoreStudent)
-    //  Value('${data.nameStudent}',${data.phoneStudent},${data.dateOfBirth},${data.scoreStudent})`;
+    for (let i = 0; i < data.length; i++) {
+    console.log("Taken Data: " + JSON.stringify(data));
 
-    let sql = `INSERT INTO students(id,nameStudent,phoneStudent,dateOfBirth,scoreStudent) 
-    VALUES(0,'${data.nameStudent}','${data.phoneStudent}','${moment(
-      data.dateOfBirth
-    ).format("YYYY-MM-DD")}','${data.scoreStudent}')`;
-    db.query(sql, [data], (err, response) => {
-      if (err) throw err;
-      res.json({ message: "Insert success!" });
-    });
+      if (data[i].type === "insert") {
+        let sql = `INSERT INTO students(id,nameStudent,phoneStudent,dateOfBirth,scoreStudent) 
+      VALUES(0,'${data[i].data.nameStudent}','${
+          data[i].data.phoneStudent
+        }','${moment(data[i].data.dateOfBirth).format("YYYY-MM-DD")}','${
+          data[i].data.scoreStudent
+        }')`;
+        db.query(sql, [data], (err, response) => {
+          if (err) throw err;
+          res.json({ message: "Insert success!" });
+        });
+
+        console.log("INSERT");
+      } else if (data[i].type === "update") {
+        let sql = `UPDATE students SET nameStudent='${
+          data[i].key.nameStudent
+        }',phoneStudent='${data[i].key.phoneStudent}',dateOfBirth='${moment(
+          data[i].key.dateOfBirth
+        ).format("YYYY-MM-DD")}',scoreStudent='${
+          data[i].key.scoreStudent
+        }' WHERE id = '${data[i].key.id}'`;
+        db.query(sql, (err, response) => {
+          if (err) throw err;
+          res.json({ message: "Update success!" });
+        });
+
+        console.log("UPDATE");
+      } else if (data[i].type === "remove") {
+        let sql = `DELETE FROM students WHERE id =${data[i].key.id} `;
+        db.query(sql, (err, response) => {
+          if (err) throw err;
+          res.json({ message: "Delete success!" });
+        });
+        console.log("REMOVE");
+      } else {
+        let sql = `INSERT INTO students(id,nameStudent,phoneStudent,dateOfBirth,scoreStudent) 
+          VALUES(0,'${data[i].nameStudent}','${data[i].phoneStudent}','${moment(
+          data[i].dateOfBirth
+        ).format("YYYY-MM-DD")}','${data[i].scoreStudent}')`;
+        db.query(sql, [data], (err, response) => {
+          if (err) throw err;
+          res.json({ message: "Insert success!" });
+        });
+      }
+    }
   },
   delete: (req, res) => {
     let sql = "DELETE FROM students WHERE id = ?";

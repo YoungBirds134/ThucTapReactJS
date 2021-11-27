@@ -40,13 +40,13 @@ const PopUpStudent = () => {
   ///Use Query
   const {
     refetchStudent,
-    
+
     dataStudent,
     isErrorStudent,
     isLoadingStudent,
   } = useGetData();
-  
-  setTimeout(dataStudent,5000000);
+
+  setTimeout(dataStudent, 5000000);
   //State
   const allowedPageSizes = [5, 10, "all"];
   const [checkPopup, setCheckPopup] = useState(null);
@@ -115,15 +115,15 @@ const PopUpStudent = () => {
         .store()
         .push([{ type: "update", data: newStudent, key: checkPopup.id }]);
     } else {
-      const newStudent = {
+      const newStudent = [{
         nameStudent: student.nameStudent,
         scoreStudent: student.scoreStudent,
         phoneStudent: student.phoneStudent,
         dateOfBirth: student.dateOfBirth,
 
         // id: randomIdStudent,
-      };
-      createMutation.mutate(student);
+      }];
+      createMutation.mutate(newStudent);
       studentDataSource.store().push([{ type: "insert", data: newStudent }]);
     }
     e.target.reset();
@@ -269,7 +269,7 @@ const PopUpStudent = () => {
     console.log("Key: " + e.data);
     let data = e.data;
     // deleteMutation.mutate(data.id);
-    deleteMutation.mutate(data.id);
+    setTimeout(deleteMutation.mutate(data.id), 50000);
   };
 
   const onSaving = React.useCallback((e) => {
@@ -312,6 +312,10 @@ const PopUpStudent = () => {
   const renderTitle = () => {
     return <p>{TiTlePopup}</p>;
   };
+console.log("Get Data Loading: "+isLoadingStudent)
+
+console.log("Create Loading: "+createMutation.isLoading)
+console.log("Delete Loading: "+deleteMutation.isLoading)
 
   return (
     <>
@@ -320,85 +324,86 @@ const PopUpStudent = () => {
       ) : isErrorStudent ? (
         <div>An error while fetching posts</div>
       ) : ( */}
-        <div>
-          <div className="main__title">
-            <h1>Manage Data Student</h1>
-          </div>
-
-          <div className="main__Add"></div>
-          <div className="main__body">
-            <DataGrid
-              dataSource={dataStudent||[]}
-              remoteOperations={true}
-              ref={gridRef}
-              loadPanel
-              enabled={true}
-              onRowRemoving={onRowRemoving}
-              // onSaving={onSaving}
-              onInitNewRow={onInitRow}
-            >
-              <LoadPanel
-                position="center"
-                shadingColor="rgba(0,0,0,1)"
-                visible={isLoadingStudent}
-                showIndicator={true}
-                shading={true}
-                showPane={true}
-              />
-              <Scrolling rowRenderingMode="virtual"></Scrolling>
-              <Paging defaultPageSize={5} />
-              <Pager
-                visible={true}
-                allowedPageSizes={allowedPageSizes}
-                displayMode="compact"
-              />
-              <Editing mode="popup" useIcons={true}>
-                <Popup
-                  showTitle={true}
-                  width={700}
-                  height={725}
-                  visible={isShowing}
-                  titleRender={renderTitle}
-                  onShown={onShown}
-                  onShowing={onShowing}
-                  // Customize Popup
-                  contentRender={renderContent}
-                >
-                  <ToolbarItem />
-                </Popup>
-                <TextField label="Student"></TextField>
-              </Editing>
-              {/* Create Column include Add Remove Update */}
-              <Column cellRender={renderButton} dataField="" />
-              <Column dataField="nameStudent" dataType="string" />
-              <Column dataField="phoneStudent" dataType="string" />
-              <Column
-                dataField="dateOfBirth"
-                dataType="date"
-                format="dd/MM/yyyy"
-              />
-              <Column
-                dataField="createDate"
-                dataType="date"
-                visible={false}
-                defaultSortOrder="asc"
-              />
-              <Column dataField="scoreStudent" dataType="number" />
-              <Toolbar>
-                <Item>
-                  <Button
-                    variant="contained"
-                    onClick={() => gridRef.current?.instance?.addRow()}
-                  >
-                    add
-                  </Button>
-                </Item>
-              </Toolbar>
-            </DataGrid>
-          </div>
-
-          {/* ///React Hook Form + Material Setup */}
+      <div>
+        <div className="main__title">
+          <h1>Manage Data Student</h1>
         </div>
+
+        <div className="main__Add"></div>
+        <div className="main__body">
+          <DataGrid
+            id="dataGrid"
+            dataSource={dataStudent || []}
+            remoteOperations={true}
+            ref={gridRef}
+            onRowRemoving={onRowRemoving}
+            // onSaving={onSaving}
+            onInitNewRow={onInitRow}
+          >
+            <LoadPanel
+            id="dataGrid"
+              position="right"
+              shadingColor="rgba(0,0,0,1)"
+              visible={isLoadingStudent||createMutation.isLoading||deleteMutation.isLoading}
+              showIndicator={true}
+              shading={true}
+              showPane={true}
+             
+            />
+            <Scrolling rowRenderingMode="virtual"></Scrolling>
+            <Paging defaultPageSize={5} />
+            <Pager
+              visible={true}
+              allowedPageSizes={allowedPageSizes}
+              displayMode="compact"
+            />
+            <Editing mode="popup" useIcons={true}>
+              <Popup
+                showTitle={true}
+                width={700}
+                height={725}
+                visible={isShowing}
+                titleRender={renderTitle}
+                onShown={onShown}
+                onShowing={onShowing}
+                // Customize Popup
+                contentRender={renderContent}
+              >
+                <ToolbarItem />
+              </Popup>
+              <TextField label="Student"></TextField>
+            </Editing>
+            {/* Create Column include Add Remove Update */}
+            <Column cellRender={renderButton} dataField="" />
+            <Column dataField="nameStudent" dataType="string" />
+            <Column dataField="phoneStudent" dataType="string" />
+            <Column
+              dataField="dateOfBirth"
+              dataType="date"
+              format="dd/MM/yyyy"
+            />
+            <Column
+              dataField="createDate"
+              dataType="date"
+              visible={false}
+              defaultSortOrder="asc"
+            />
+            <Column dataField="scoreStudent" dataType="number" />
+            <Toolbar>
+              <Item>
+                <Button
+                  variant="contained"
+                  onClick={() => gridRef.current?.instance?.addRow()}
+                >
+                  add
+                </Button>
+              </Item>
+            </Toolbar>
+          </DataGrid>
+        </div>
+
+        {/* ///React Hook Form + Material Setup */}
+      </div>
       {/* )} */}
     </>
   );

@@ -105,28 +105,29 @@ const BatchStudent = () => {
   const onSaving = React.useCallback(
     (e) => {
       // e.cancel = true;
-      debugger
-      gridRef.current?.instance?.beginUpdate();
+      debugger;
+
       const data = e.changes;
-      for (let i = 0; i < data.length; i++) {
-        if (data[i].type === "insert") {
-          createMutation.mutate(data[i].data);
+      createMutation.mutate(data);
 
-          console.log("INSERT");
-        } else if (data[i].type === "update") {
-          updateMutation.mutate(data[i].data);
+      // for (let i = 0; i < data.length; i++) {
+      //   if (data[i].type === "insert") {
+      //     createMutation.mutate(data[i].data);
 
-          console.log("UPDATE");
-        } else {
-          deleteMutation.mutate(data[i].key.id);
-          console.log("REMOVE");
-        }
-      }
-      gridRef.current?.instance?.endUpdate() ;
+      //     console.log("INSERT");
+      //   } else if (data[i].type === "update") {
+      //     updateMutation.mutate(data[i].data);
+
+      //     console.log("UPDATE");
+      //   } else {
+      //     deleteMutation.mutate(data[i].key.id);
+      //     console.log("REMOVE");
+      //   }
+      // }
     },
-    [createMutation, updateMutation, deleteMutation]
+    []
   );
-  
+
   return isLoadingStudent ? (
     <div>Loading...</div>
   ) : isErrorStudent ? (
@@ -150,15 +151,14 @@ const BatchStudent = () => {
           onInitNewRow={onInitRow}
           onSaving={onSaving}
           loadPanel
-        
         >
-        <LoadPanel
-                shadingColor="rgba(0,0,0,0.4)"
-                visible={isLoadingPanel}
-                showIndicator={true}
-                shading={true}
-                showPane={true}
-              />
+          <LoadPanel
+            shadingColor="rgba(0,0,0,0.4)"
+            visible={isLoadingPanel}
+            showIndicator={true}
+            shading={true}
+            showPane={true}
+          />
           <Paging defaultPageSize={5} />
           <Pager
             visible={true}
@@ -216,8 +216,8 @@ const BatchStudent = () => {
               <Button
                 variant="contained"
                 icon="refresh"
-                onClick={() => {gridRef.current?.instance?.saveEditData();
-              
+                onClick={() => {
+                  gridRef.current?.instance?.saveEditData();
                 }}
                 viable={false}
               >

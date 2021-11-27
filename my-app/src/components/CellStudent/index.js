@@ -86,16 +86,12 @@ const CellStudent = () => {
     deleteMutation.mutate(data.id);
   };
   const onSaved = React.useCallback((e) => {
-    // e.cancel = true;
+    let data = e.changes;
 
-    console.log("Changes Temp onSaving: " + changesTemp);
+    arrTemp.push(data.key);
+  }, []);
 
-    const data = e.changes;
-    console.log("Data onSaving: " + data);
-    setChangesTemp(changesTemp.concat(data));
-    
-  }, [changesTemp]);
-  console.log("Changes Temp onSite: " + changesTemp);
+  console.log("Changes Temp onSaving: " + JSON.stringify(arrTemp));
   return (
     <div>
       <div className="main__title">
@@ -173,11 +169,13 @@ const CellStudent = () => {
                 refetch
               </Button>
             </Item>
+
             <Item location="after">
               <Button
                 variant="contained"
                 icon="refresh"
-                onClick={() => gridRef.current?.instance?.saveEditData()}
+                // onClick={() => gridRef.current?.instance?.saveEditData()}
+                onClick={() => arrTemp.slice(0, arrTemp.length)}
                 viable={false}
               >
                 Save
