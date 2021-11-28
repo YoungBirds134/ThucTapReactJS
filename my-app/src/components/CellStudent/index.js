@@ -186,6 +186,7 @@ const CellStudent = () => {
                   icon="refresh"
                   onClick={() => {
                     refetch();
+                    setChangesTempUpdate([]);
                     toast("🦄 You are refetched", {
                       position: "top-right",
                       autoClose: 5000,

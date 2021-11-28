@@ -36,9 +36,9 @@ module.exports = {
   },
   store: (req, res) => {
     const data = req.body;
-  
+
     for (let i = 0; i < data.length; i++) {
-    console.log("Taken Data: " + JSON.stringify(data));
+      console.log("Taken Data: " + JSON.stringify(data));
 
       if (data[i].type === "insert") {
         let sql = `INSERT INTO students(id,nameStudent,phoneStudent,dateOfBirth,scoreStudent) 
@@ -49,7 +49,7 @@ module.exports = {
         }')`;
         db.query(sql, [data], (err, response) => {
           if (err) throw err;
-        return  res.json({ message: "Insert success!" });
+          // return res.json({ message: "Insert success!" });
         });
 
         console.log("INSERT");
@@ -64,15 +64,15 @@ module.exports = {
         }' WHERE id = '${data[i].key.id}'`;
         db.query(sql, (err, response) => {
           if (err) throw err;
-      return    res.json({ message: "Update success!" });
+          // return res.json({ message: "Update success!" });
         });
 
         console.log("UPDATE");
       } else if (data[i].type === "remove") {
         let sql = `DELETE FROM students WHERE id =${data[i].key.id} `;
-        db.query(sql,[data], (err, response) => {
+        db.query(sql, [data], (err, response) => {
           if (err) throw err;
-        return  res.json({ message: "Delete success!" });
+          // return res.json({ message: "Delete success!" });
         });
         console.log("REMOVE");
       } else {
@@ -82,10 +82,12 @@ module.exports = {
         ).format("YYYY-MM-DD")}','${data[i].scoreStudent}')`;
         db.query(sql, [data], (err, response) => {
           if (err) throw err;
-      return    res.json({ message: "Insert success!" });
+          // return res.json({ message: "Insert success!" });
         });
       }
-    }
+    }// Khong duoc de res trong for()
+    res.json({ message: "Insert success!" });
+
   },
   delete: (req, res) => {
     let sql = "DELETE FROM students WHERE id = ?";
