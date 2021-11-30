@@ -2,7 +2,7 @@
 const mysql = require('mysql');
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "127.0.0.1",
+  host: process.env.DB_HOST || "172.16.252.13",
   user: process.env.DB_USER || "YoungBirds",
   password: process.env.DB_PASS || "admin",
   database: process.env.DB_NAME || "school",

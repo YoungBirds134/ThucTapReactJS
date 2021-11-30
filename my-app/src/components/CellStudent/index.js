@@ -100,11 +100,19 @@ const CellStudent = () => {
       if (data[0].type === "update") {
         let state = changesTempUpdate;
         if (state.length > 0) {
-          const removeItemDuplicate = state.filter(
+          let removeItemDuplicate = state.filter(
             (item) => item.key.id !== data[0].key.id
           );
-          removeItemDuplicate.push(data[0]);
-          setChangesTempUpdate(removeItemDuplicate);
+          if (removeItemDuplicate === undefined) {
+            let removeItem = state.filter(
+              (item) => item.key.id !== data[1].key.id
+            );
+            removeItem.push(data[1]);
+            setChangesTempUpdate(removeItem);
+          } else {
+            removeItemDuplicate.push(data[0]);
+            setChangesTempUpdate(removeItemDuplicate);
+          }
         } else if (state.length === 0) {
           state.push(data[0]);
           setChangesTempUpdate(state);
